@@ -37,17 +37,16 @@ router.post("/register", (req, res) => {
 
         bcrpyt.genSalt(10, (err, salt) => {
           bcrpyt.hash(newUser.password, salt, (err, hash) => {
-            if (err) throw err;
+            if (err) console.log(err);
             newUser.password = hash;
+            newUser
+              .save()
+              .then(userRes => {
+                res.json({ message: "User Added Successfully" });
+              })
+              .catch(err => console.log(err));
           });
         });
-
-        newUser
-          .save()
-          .then(userRes => {
-            res.send().json(userRes);
-          })
-          .catch(err => console.log(err));
       }
     })
     .catch(err => {
@@ -58,7 +57,7 @@ router.post("/register", (req, res) => {
 // @route GET /user/login
 // @access Public
 // @desc To Login User
-router.post("/", (req, res) => {
+router.post("/login", (req, res) => {
   const userEmail = req.body.email;
   const password = req.body.password;
 
@@ -68,9 +67,10 @@ router.post("/", (req, res) => {
     }
 
     bcrpyt.compare(password, usr.password).then(isMatch => {
-      if (!sMatch) return res.status(400).json("Incorrect Passward");
+      if (!isMatch)
+        return res.status(400).json({ message: "Incorrect Passward" });
       //Generate json Web Token For Verification
-      const userPayload = { id: usr.id, name: usr.name, avatar: ust.avatar };
+      const userPayload = { id: usr.id, name: usr.name, avatar: usr.avatar };
       // JWT Key Sign
       jwt.sign(
         userPayload,
@@ -93,7 +93,13 @@ router.post("/", (req, res) => {
 router.get(
   "/curret",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {}
+  (req, res) => {
+    res.json({
+      name: req.user.name,
+      avatar: req.user.avatar,
+      email: req.user.email
+    });
+  }
 );
 
 module.exports = router;

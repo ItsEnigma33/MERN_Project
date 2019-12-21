@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //Passport
-app.use(passport.intialize());
+app.use(passport.initialize());
 
 require("./config/passport")(passport);
 
