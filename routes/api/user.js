@@ -5,6 +5,7 @@ const bcrpyt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const key = require("../../config/keys");
 const passport = require("passport");
+const resgisterUser = require("../../validate/registerValidator");
 
 const router = express.Router();
 
@@ -17,41 +18,46 @@ router.get("/test", (req, res) => res.json({ user: "allowed" }));
 // @access Public
 // @desc To Add New User
 router.post("/register", (req, res) => {
-  User.findOne({ email: req.body.email })
-    .then(user => {
-      if (user) {
-        res.status(400).json({ message: "Email is Already Register" });
-      } else {
-        const avatar = gravatar.url(req.body.email, {
-          s: "200", // Avatar Size
-          r: "pg", //Rating
-          d: "mm"
-        });
-
-        const newUser = new User({
-          name: req.body.name,
-          email: req.body.email,
-          avatar,
-          password: req.body.password
-        });
-
-        bcrpyt.genSalt(10, (err, salt) => {
-          bcrpyt.hash(newUser.password, salt, (err, hash) => {
-            if (err) console.log(err);
-            newUser.password = hash;
-            newUser
-              .save()
-              .then(userRes => {
-                res.json({ message: "User Added Successfully" });
-              })
-              .catch(err => console.log(err));
+  let errors = resgisterUser(req.body);
+  console.log(errors);
+  if (!errors.isValid) res.json(errors.errors);
+  else {
+    User.findOne({ email: req.body.email })
+      .then(user => {
+        if (user) {
+          res.status(400).json({ message: "Email is Already Register" });
+        } else {
+          const avatar = gravatar.url(req.body.email, {
+            s: "200", // Avatar Size
+            r: "pg", //Rating
+            d: "mm"
           });
-        });
-      }
-    })
-    .catch(err => {
-      console.log(err);
-    });
+
+          const newUser = new User({
+            name: req.body.name,
+            email: req.body.email,
+            avatar,
+            password: req.body.password
+          });
+
+          bcrpyt.genSalt(10, (err, salt) => {
+            bcrpyt.hash(newUser.password, salt, (err, hash) => {
+              if (err) console.log(err);
+              newUser.password = hash;
+              newUser
+                .save()
+                .then(userRes => {
+                  res.json({ message: "User Added Successfully" });
+                })
+                .catch(err => console.log(err));
+            });
+          });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
 });
 
 // @route GET /user/login
