@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const passport = require("passport");
-const profileModel = mongoose.model("profile");
+const profileModel = require("../../models/Profile");
 const profileValidator = require("../../validate/profileValidator");
 const educationValidator = require("../../validate/educationValidator");
 const experienceValidator = require("../../validate/experienceValidator");
@@ -21,7 +21,8 @@ router.get(
         if (profile) {
           res.json(profile);
         } else {
-          res.status(404).json((errors.profile = "Create Profile First"));
+          errors.profile = "Create Profile First";
+          res.status(404).json(errors);
         }
       });
   }
@@ -36,54 +37,65 @@ router.post(
   (req, res) => {
     profileModel.findOne({ user: req.user.id }).then(profile => {
       let { errors, isValid } = profileValidator(req.body);
-      if (isValid) {
+      console.log(req.body);
+      if (!isValid) {
         res.status(400).json(errors);
-      }
-      let userProfile = {};
-      let social = {};
-      userProfile.user = req.user.id;
-
-      //Checking they arent undefined or null
-      if (req.body.company) userProfile.company = req.body.company;
-      if (req.body.handle) userProfile.handle = req.body.handle;
-      if (req.body.bio) userProfile.bio = req.body.bio;
-      if (req.body.website) userProfile.website = req.body.website;
-      if (req.body.location) userProfile.location = req.body.location;
-      if (req.body.status) userProfile.company = req.body.company;
-      if (req.body.gitHubUserName)
-        userProfile.gitHubUserName = req.body.gitHubUserName;
-
-      //Skills
-      if (req.body.skills) userProfile.skills = req.body.skills.split(",");
-
-      //Social
-      if (req.body.facebook) social.facebook = req.body.facebook;
-      if (req.body.twitter) social.twitter = req.body.twitter;
-      if (req.body.instagram) social.instagram = req.body.instagram;
-      if (req.body.linkedIn) social.linkedIn = req.body.linkedIn;
-      userProfile.social = social;
-
-      if (profile) {
-        // Modify / Update Action
-        // Modify In Mongo
-        profileModel
-          .findOneAndUpdate(
-            { user: req.user.id },
-            { $set: userProfile },
-            { new: true }
-          )
-          .then(profile => res.json(profile));
-        res.json(profile);
       } else {
-        //Create  / Add Action
-        //Check If handle Exist Already
-        profileModel.findOne({ handle: req.body.handle }).then(profile => {
-          if (profile) {
-            res.send(400).json((errors.handle = "Handle Exist For user"));
-          } else {
-            res.json(profile);
-          }
-        });
+        let userProfile = {};
+        let social = {};
+        userProfile.user = req.user.id;
+
+        //Checking they arent undefined or null
+        if (req.body.company) userProfile.company = req.body.company;
+        if (req.body.handle) userProfile.handle = req.body.handle;
+        if (req.body.bio) userProfile.bio = req.body.bio;
+        if (req.body.website) userProfile.website = req.body.website;
+        if (req.body.location) userProfile.location = req.body.location;
+        if (req.body.status) userProfile.status = req.body.status;
+        if (req.body.gitHubUserName)
+          userProfile.gitHubUserName = req.body.gitHubUserName;
+
+        //Skills
+        if (req.body.skills) userProfile.skills = req.body.skills.split(",");
+
+        //Social
+        if (req.body.facebook) social.facebook = req.body.facebook;
+        if (req.body.twitter) social.twitter = req.body.twitter;
+        if (req.body.instagram) social.instagram = req.body.instagram;
+        if (req.body.linkedIn) social.linkedIn = req.body.linkedIn;
+        userProfile.social = social;
+
+        if (profile) {
+          // Modify / Update Action
+          // Modify In Mongo
+          profileModel
+            .findOneAndUpdate(
+              { user: req.user.id },
+              { $set: userProfile },
+              { new: true }
+            )
+            .then(profile => res.json(profile));
+        } else {
+          //Create  / Add Action
+          //Check If handle Exist Already
+          profileModel.findOne({ handle: req.body.handle }).then(profile => {
+            if (profile) {
+              errors.handle = "Handle Exist For user";
+              res.send(400).json(errors);
+            } else {
+              profileModel(userProfile)
+                .save()
+                .then(resPro => {
+                  res.json(resPro);
+                })
+                .catch(err => {
+                  console.log(err);
+                  errors.dbError = err.message;
+                  res.json(errors);
+                });
+            }
+          });
+        }
       }
     });
   }
@@ -98,29 +110,30 @@ router.post(
   (req, res) => {
     profileModel.findOne({ user: req.user.id }).then(profile => {
       let { errors, isValid } = experienceValidator(req.body);
-      if (isValid) {
+      if (!isValid) {
         res.status(400).json(errors);
+      } else {
+        let experince = {
+          title: req.body.title,
+          company: req.body.company,
+          location: req.body.location,
+          from: req.body.from,
+          to: req.body.to,
+          currentWorking: req.body.currentWorking
+        };
+
+        profile.experience.push(experince);
+
+        profile
+          .save()
+          .then(userProfile => {
+            res.json(userProfile);
+          })
+          .catch(err => {
+            errors.dbError = err.message;
+            res.json(errors);
+          });
       }
-
-      let experince = {
-        title: req.body.title,
-        company: req.body.company,
-        location: req.body.location,
-        from: req.body.from,
-        to: req.body.to,
-        currentWorking: req.body.currentWorking
-      };
-
-      profile.experience.push(experince);
-
-      profile
-        .save()
-        .then(userProfile => {
-          res.json(userProfile);
-        })
-        .catch(err => {
-          res.json((errors.dbError = err.message));
-        });
     });
   }
 );
@@ -135,27 +148,28 @@ router.post(
     profileModel.findOne({ user: req.user.id }).then(profile => {
       let { errors, isValid } = educationValidator(req.body);
 
-      if (isValid) {
+      if (!isValid) {
         res.status(400).json(errors);
+      } else {
+        let education = {
+          school: req.body.school,
+          highSchool: req.body.highSchool,
+          college: req.body.college,
+          fieldOfDegree: req.body.fieldOfDegree
+        };
+
+        profile.education.push(education);
+
+        profile
+          .save()
+          .then(userProfile => {
+            res.json(userProfile);
+          })
+          .catch(err => {
+            errors.dbError = err.message;
+            res.json(errors);
+          });
       }
-
-      let education = {
-        school: req.body.school,
-        highSchool: req.body.highSchool,
-        college: req.body.college,
-        fieldOfDegree: req.body.fieldOfDegree
-      };
-
-      profile.education.push(education);
-
-      profile
-        .save()
-        .then(userProfile => {
-          res.json(userProfile);
-        })
-        .catch(err => {
-          res.json((errors.dbError = err.message));
-        });
     });
   }
 );
@@ -165,7 +179,7 @@ router.post(
 // @desc Get User Profie By Profile Id
 router.get("/user/:user", (req, res) => {
   profileModel
-    .findOne({ user: req.param.user })
+    .findOne({ user: req.params.user })
     .populate("user", ["name", "avatar"]) // popluate the Joined schema Data in profile Schema (user name , user avatar)
     .then(profile => {
       let errors = {};
@@ -182,7 +196,7 @@ router.get("/user/:user", (req, res) => {
 // @desc Get User Profie By handle
 router.get("/handle/:handle", (req, res) => {
   profileModel
-    .findOne({ handle: req.param.handle })
+    .findOne({ handle: req.params.handle })
     .populate("user", ["name", "avatar"]) // popluate the Joined schema Data in profile Schema (user name , user avatar)
     .then(profile => {
       let errors = {};
@@ -201,13 +215,18 @@ router.get("/all", (req, res) => {
   profileModel
     .find()
     .populate("user", ["name", "avatar"]) // popluate the Joined schema Data in profile Schema (user name , user avatar)
-    .then(profile => {
+    .then(profiles => {
       let errors = {};
       if (profiles) {
         res.json(profiles);
       } else {
-        res.status(404).json((errors.profile = "No profiles Exist"));
+        errors.profile = "No profiles Exist";
+        res.status(404).json(errors);
       }
+    })
+    .catch(err => {
+      errors.dbError = err.message;
+      res.status(400).json(errors);
     });
 });
 
