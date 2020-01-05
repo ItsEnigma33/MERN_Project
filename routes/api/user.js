@@ -20,7 +20,7 @@ router.get("/test", (req, res) => res.json({ user: "allowed" }));
 router.post("/register", (req, res) => {
   let errors = resgisterUser(req.body);
   console.log(errors);
-  if (!errors.isValid) res.json(errors.errors);
+  if (!errors.isValid) res.status(400).json(errors.errors);
   else {
     User.findOne({ email: req.body.email })
       .then(user => {

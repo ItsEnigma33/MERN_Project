@@ -18,7 +18,7 @@ const registerValidator = data => {
   }
 
   if (Validator.isEmpty(email)) {
-    errors.name = "User Email Is Required";
+    errors.email = "User Email Is Required";
   }
 
   if (!Validator.isEmail(email)) {
@@ -26,15 +26,15 @@ const registerValidator = data => {
   }
 
   if (Validator.isEmpty(password)) {
-    errors.name = "User Password Is Required";
+    errors.password = "User Password Is Required";
   }
 
   if (!Validator.isLength(password, { min: 6, max: 30 })) {
-    errors.name = "User Name Should Be Between 6 To 30 Characters";
+    errors.password = "User Name Should Be Between 6 To 30 Characters";
   }
 
   if (!Validator.equals(password, password2)) {
-    errors.name = "Password Needs To be Match";
+    errors.password2 = "Password Needs To be Match";
   }
 
   return {
