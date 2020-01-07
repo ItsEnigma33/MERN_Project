@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import classname from "classname";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { registerAction } from "../../actions/registerAction";
+import { registerAction } from "../../actions/auth";
 import PropTypes from "prop-types";
 
 class Register extends Component {
@@ -44,6 +44,12 @@ class Register extends Component {
     }
   }
 
+  componentWillMount() {
+    const { isAuthenticated } = this.props.auth;
+    if (isAuthenticated) {
+      this.props.history.push("./dashboard");
+    }
+  }
   render() {
     return (
       <div className="register">

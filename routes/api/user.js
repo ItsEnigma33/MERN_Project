@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const key = require("../../config/keys");
 const passport = require("passport");
 const resgisterUser = require("../../validate/registerValidator");
+const loginValidator = require("../../validate/loginValidator");
 
 const router = express.Router();
 
@@ -19,7 +20,6 @@ router.get("/test", (req, res) => res.json({ user: "allowed" }));
 // @desc To Add New User
 router.post("/register", (req, res) => {
   let errors = resgisterUser(req.body);
-  console.log(errors);
   if (!errors.isValid) res.status(400).json(errors.errors);
   else {
     User.findOne({ email: req.body.email })
@@ -64,33 +64,51 @@ router.post("/register", (req, res) => {
 // @access Public
 // @desc To Login User
 router.post("/login", (req, res) => {
-  const userEmail = req.body.email;
-  const password = req.body.password;
+  let { isValid, errors } = loginValidator(req.body);
+  console.log(req.body);
 
-  User.findOne({ email: userEmail }).then(usr => {
-    if (!usr) {
-      return res.status(404).json({ error: "User Not Found" });
-    }
+  if (!isValid) {
+    res.status(400).json(errors);
+  } else {
+    const userEmail = req.body.email;
+    const password = req.body.password;
 
-    bcrpyt.compare(password, usr.password).then(isMatch => {
-      if (!isMatch)
-        return res.status(400).json({ message: "Incorrect Passward" });
-      //Generate json Web Token For Verification
-      const userPayload = { id: usr.id, name: usr.name, avatar: usr.avatar };
-      // JWT Key Sign
-      jwt.sign(
-        userPayload,
-        key.secretOrKey,
-        { expiresIn: 3600 },
-        (error, token) => {
-          res.json({
-            message: "Login Successful",
-            token: "Bearer " + token
-          });
-        }
-      );
+    User.findOne({ email: userEmail }).then(usr => {
+      if (!usr) {
+        errors.email = "User Not Found";
+        return res.status(404).json(errors);
+      }
+
+      bcrpyt.compare(password, usr.password).then(isMatch => {
+        if (!isMatch)
+          return res.status(400).json({ message: "Incorrect Passward" });
+        // Generate json Web Token For Verification
+        const userPayload = {
+          id: usr.id,
+          name: usr.name,
+          avatar: usr.avatar,
+          user: usr
+        };
+        // JWT Key Sign
+        jwt.sign(
+          userPayload,
+          key.secretOrKey,
+          { expiresIn: 3600 },
+          (error, token) => {
+            if (error) {
+              errors.tokenError = error.message;
+              res.status(400).json(errors);
+            } else {
+              res.json({
+                message: "Login Successful",
+                token: "Bearer " + token
+              });
+            }
+          }
+        );
+      });
     });
-  });
+  }
 });
 
 // @route GET /user/current
