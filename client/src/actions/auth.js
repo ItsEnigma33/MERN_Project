@@ -10,7 +10,6 @@ export const registerAction = (user, history) => dispatch => {
       history.push("/login");
     })
     .catch(err => {
-      console.log(err.response.data);
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data
@@ -29,7 +28,6 @@ export const loginAction = user => dispatch => {
       setAuthToken(token);
       //JWT Decode
       const { user } = jwt_decode(token);
-
       //Dispatch
       dispatch(setUserDispatcher(user));
     })
@@ -41,7 +39,22 @@ export const loginAction = user => dispatch => {
     );
 };
 
-const setUserDispatcher = user => {
+export const logout = user => dispatch => {
+  localStorage.removeItem("token");
+  //Removing header From Axios
+  setAuthToken(false);
+  // Dispatching Empty Object
+  dispatch(logoutUserDispatcher());
+};
+
+export const logoutUserDispatcher = () => {
+  return {
+    type: SET_USER,
+    payload: {}
+  };
+};
+
+export const setUserDispatcher = user => {
   return {
     type: SET_USER,
     payload: user
