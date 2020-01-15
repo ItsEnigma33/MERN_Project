@@ -37,7 +37,6 @@ router.post(
   (req, res) => {
     profileModel.findOne({ user: req.user.id }).then(profile => {
       let { errors, isValid } = profileValidator(req.body);
-      console.log(req.body);
       if (!isValid) {
         res.status(400).json(errors);
       } else {
@@ -52,8 +51,8 @@ router.post(
         if (req.body.website) userProfile.website = req.body.website;
         if (req.body.location) userProfile.location = req.body.location;
         if (req.body.status) userProfile.status = req.body.status;
-        if (req.body.gitHubUserName)
-          userProfile.gitHubUserName = req.body.gitHubUserName;
+        if (req.body.githubusername)
+          userProfile.githubusername = req.body.githubusername;
 
         //Skills
         if (req.body.skills) userProfile.skills = req.body.skills.split(",");
@@ -63,6 +62,7 @@ router.post(
         if (req.body.twitter) social.twitter = req.body.twitter;
         if (req.body.instagram) social.instagram = req.body.instagram;
         if (req.body.linkedIn) social.linkedIn = req.body.linkedIn;
+        if (req.body.youtube) social.youtube = req.body.youtube;
         userProfile.social = social;
 
         if (profile) {
@@ -89,7 +89,6 @@ router.post(
                   res.json(resPro);
                 })
                 .catch(err => {
-                  console.log(err);
                   errors.dbError = err.message;
                   res.json(errors);
                 });

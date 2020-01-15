@@ -39,7 +39,7 @@ const profileSchema = new Schema({
     required: true
   },
 
-  gitHubUserName: {
+  githubusername: {
     type: String
   },
 
@@ -100,6 +100,9 @@ const profileSchema = new Schema({
       type: String
     },
     twitter: {
+      type: String
+    },
+    youtube: {
       type: String
     }
   },

@@ -80,8 +80,11 @@ router.post("/login", (req, res) => {
       }
 
       bcrpyt.compare(password, usr.password).then(isMatch => {
-        if (!isMatch)
-          return res.status(400).json({ message: "Incorrect Passward" });
+        if (!isMatch) {
+          errors.password = "Incorrect Password";
+          return res.status(400).json(errors);
+        }
+
         // Generate json Web Token For Verification
         const userPayload = {
           id: usr.id,

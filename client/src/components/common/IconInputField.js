@@ -2,7 +2,7 @@ import React from "react";
 import classname from "classname";
 import PropTypes from "prop-types";
 
-function InputField({
+function IconInputField({
   name,
   value,
   type,
@@ -10,10 +10,14 @@ function InputField({
   placeholder,
   error,
   info,
-  disabled
+  disabled,
+  icon
 }) {
   return (
-    <div className="form-group">
+    <div className="input-group mb-3">
+      <span className="input-group-text">
+        <i className={icon}></i>
+      </span>
       <input
         type={type}
         className={classname("form-control form-control-lg", {
@@ -31,7 +35,7 @@ function InputField({
   );
 }
 
-InputField.propTypes = {
+IconInputField.propTypes = {
   type: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
@@ -39,11 +43,12 @@ InputField.propTypes = {
   value: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
   info: PropTypes.string,
-  error: PropTypes.string
+  error: PropTypes.string,
+  icon: PropTypes.string.isRequired
 };
 
-InputField.defautProps = {
+IconInputField.defautProps = {
   type: "text"
 };
 
-export default InputField;
+export default IconInputField;
