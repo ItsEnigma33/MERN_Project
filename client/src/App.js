@@ -18,6 +18,8 @@ import Dashboard from "./components/Dashboard/Dashboard";
 import CreateProfile from "./components/create-profile/CreateProfile";
 import EditProfile from "./components/edit-profile/EditProfile";
 import PrivateRoute from "./components/Dashboard/PrivateRoute";
+import AddExperience from "./components/add-experience/AddExperience";
+import AddEducation from "./components/add-education/AddEducation";
 
 if (localStorage.getItem("token")) {
   //Setting Auth Token For Axios
@@ -66,6 +68,18 @@ function App() {
             <PrivateRoute
               path="/edit-profile"
               component={EditProfile}
+            ></PrivateRoute>
+          </Switch>
+          <Switch>
+            <PrivateRoute
+              path="/add-experience"
+              component={AddExperience}
+            ></PrivateRoute>
+          </Switch>
+          <Switch>
+            <PrivateRoute
+              path="/add-education"
+              component={AddEducation}
             ></PrivateRoute>
           </Switch>
           <Footer />

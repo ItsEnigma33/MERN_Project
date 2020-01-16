@@ -12,6 +12,13 @@ const educationValidator = data => {
     : data.fieldOfDegree;
 
   //No validion yet
+  if (Validator.isEmpty(school)) {
+    errors.school = "School Is Mandantory";
+  }
+
+  if (Validator.isEmpty(fieldOfDegree)) {
+    errors.fieldOfDegree = "Field Of Degree Is Mandantory";
+  }
 
   return {
     errors,

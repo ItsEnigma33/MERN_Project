@@ -32,6 +32,7 @@ export const clearCurrentProfile = () => {
   };
 };
 
+// Add Profile
 export const createProfile = (profileData, history) => dispatch => {
   axios
     .post("/profile/user", profileData)
@@ -50,6 +51,75 @@ export const createProfile = (profileData, history) => dispatch => {
     );
 };
 
+// Add Exp
+export const addExperienceAction = (experienceData, history) => dispatch => {
+  axios
+    .post("/profile/addExperience", experienceData)
+    .then(res => {
+      history.push("/dashboard");
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+//Add Edu
+export const addEducationAction = (educatinData, history) => dispatch => {
+  axios
+    .post("/profile/addEducation", educatinData)
+    .then(res => {
+      history.push("/dashboard");
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+//Del Exp
+export const deleteExperienceById = (id, history) => dispatch => {
+  axios
+    .delete("", id)
+    .then(res => {
+      dispatch({
+        type: SET_PROFILE,
+        payload: res.data
+      });
+      history.push("/dashboard");
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+// Del Edu
+export const deleteEducationById = (id, history) => dispatch => {
+  axios
+    .delete("", id)
+    .then(res => {
+      dispatch({
+        type: SET_PROFILE,
+        payload: res.data
+      });
+      history.push("/dashboard");
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+//Del Profile
 export const deleteProfile = () => dispatch => {
   axios
     .delete("/profile/delete")

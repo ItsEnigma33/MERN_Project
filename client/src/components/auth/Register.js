@@ -91,7 +91,7 @@ class Register extends Component {
                 <InputFiels
                   name="password2"
                   type="password"
-                  placeholder="password2"
+                  placeholder="Confirm Password"
                   value={this.state.password2}
                   onChange={this.input}
                   error={this.state.errors.password2}

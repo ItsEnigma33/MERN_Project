@@ -66,6 +66,9 @@ const profileSchema = new Schema({
       currentWorking: {
         type: Boolean,
         default: false
+      },
+      description: {
+        type: String
       }
     }
   ],
@@ -109,7 +112,7 @@ const profileSchema = new Schema({
 
   date: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   }
 });
 

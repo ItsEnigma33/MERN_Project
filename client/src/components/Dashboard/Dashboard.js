@@ -5,6 +5,8 @@ import { getCurrentProfile, deleteProfile } from "../../actions/profileAction";
 import Spinner from "./Spinner";
 import { Link } from "react-router-dom";
 import DashboardMenu from "./DashboardMenu";
+import Experience from "./Experience";
+import Education from "./Education";
 
 class Dashboard extends Component {
   constructor(props) {
@@ -35,11 +37,14 @@ class Dashboard extends Component {
         dashboardRender = (
           <div>
             <p className="lead-text-muted">
-              Welome <Link to="`${profile.handle}`">{user.name}</Link>
+              Welome <Link to={`/profile/${profile.handle}`}>{user.name}</Link>
             </p>
+
             <DashboardMenu />
 
-            {/* Education And Experience Section */}
+            <Experience experience={profile.experience} />
+
+            <Education education={profile.education} />
 
             <div style={{ marginBottom: "60px" }}>
               <button
