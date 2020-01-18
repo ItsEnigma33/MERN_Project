@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const passport = require("passport");
 const profileModel = require("../../models/Profile");
+const userModel = mongoose.model("users");
 const profileValidator = require("../../validate/profileValidator");
 const educationValidator = require("../../validate/educationValidator");
 const experienceValidator = require("../../validate/experienceValidator");
@@ -170,6 +171,78 @@ router.post(
           });
       }
     });
+  }
+);
+
+// @route DELETE /profile/experience/:experienceId
+// @access private
+// @desc add Education for Logged In User Profie
+router.delete(
+  "/experience/:experienceId",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    profileModel.findOne({ user: req.user.id }).then(profile => {
+      let errors;
+
+      //filtering Education Id
+      profile.experience = profile.experience.filter(exp => {
+        return exp._id != req.params.experienceId;
+      });
+
+      //Saving
+      profile
+        .save()
+        .then(pro => res.json(pro))
+        .catch(err => {
+          errors.dbError = err.message;
+          res.status(400).json(errors);
+        });
+    });
+  }
+);
+
+// @route DELETE /profile/education/:educationId
+// @access private
+// @desc add Education for Logged In User Profie
+router.delete(
+  "/education/:educationId",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    profileModel.findOne({ user: req.user.id }).then(profile => {
+      let errors;
+
+      //filtering Education Id
+      profile.education = profile.education.filter(edu => {
+        return edu._id != req.params.educationId;
+      });
+
+      //Saving
+      profile
+        .save()
+        .then(pro => res.json(pro))
+        .catch(err => {
+          errors.dbError = err.message;
+          res.status(400).json(errors);
+        });
+    });
+  }
+);
+
+// @route DELETE /profile/delete
+// @access private
+// @desc add Education for Logged In User Profie
+router.delete(
+  "/delete",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    profileModel
+      .findOneAndDelete({ user: req.user.id })
+      .then(() => {
+        userModel.findByIdAndDelete({ _id: req.user.id }).then(() => {
+          res.json({ status: "Success" });
+        });
+      })
+      .catch(err => res.status(400).json({ error: err.message }));
   }
 );
 

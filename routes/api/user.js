@@ -65,8 +65,6 @@ router.post("/register", (req, res) => {
 // @desc To Login User
 router.post("/login", (req, res) => {
   let { isValid, errors } = loginValidator(req.body);
-  console.log(req.body);
-
   if (!isValid) {
     res.status(400).json(errors);
   } else {

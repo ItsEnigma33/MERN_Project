@@ -4,7 +4,8 @@ import {
   SET_PROFILE,
   CLEAR_CURRENT_PROFILE,
   GET_ERRORS,
-  SET_USER
+  SET_USER,
+  SET_PROFILES
 } from "./types";
 
 export const getCurrentProfile = () => dispatch => {
@@ -84,7 +85,7 @@ export const addEducationAction = (educatinData, history) => dispatch => {
 //Del Exp
 export const deleteExperienceById = (id, history) => dispatch => {
   axios
-    .delete("", id)
+    .delete(`/profile/experience/${id}`, id)
     .then(res => {
       dispatch({
         type: SET_PROFILE,
@@ -103,7 +104,7 @@ export const deleteExperienceById = (id, history) => dispatch => {
 // Del Edu
 export const deleteEducationById = (id, history) => dispatch => {
   axios
-    .delete("", id)
+    .delete(`/profile/education/${id}`, id)
     .then(res => {
       dispatch({
         type: SET_PROFILE,
@@ -111,10 +112,49 @@ export const deleteEducationById = (id, history) => dispatch => {
       });
       history.push("/dashboard");
     })
-    .catch(err =>
+    .catch(err => {
+      console.log(err);
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data
+      });
+    });
+};
+
+//Get All Profiles
+export const getAllProfiles = () => dispatch => {
+  axios
+    .get("/profile/all")
+    .then(res => {
+      dispatch(setProfileLoading());
+      dispatch({
+        type: SET_PROFILES,
+        payload: res.data
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: SET_PROFILES,
+        payload: null
+      })
+    );
+};
+
+//Get Profile By handle
+export const getProfileByHandle = handle => dispatch => {
+  axios
+    .get(`/profile/handle/${handle}`)
+    .then(res => {
+      dispatch(setProfileLoading());
+      dispatch({
+        type: SET_PROFILE,
+        payload: res.data
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: SET_PROFILE,
+        payload: null
       })
     );
 };

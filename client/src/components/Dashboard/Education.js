@@ -2,10 +2,12 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
+import { deleteEducationById } from "../../actions/profileAction";
 
 class Education extends Component {
-  deleteEducation(ev) {
+  deleteEducation(id, ev) {
     ev.preventDefault();
+    this.props.deleteEducationById(id, this.props.history);
   }
 
   render() {
@@ -45,6 +47,8 @@ class Education extends Component {
   }
 }
 
-Education.propTypes = {};
+Education.propTypes = {
+  deleteEducationById: PropTypes.func.isRequired
+};
 
-export default connect(null)(withRouter(Education));
+export default connect(null, { deleteEducationById })(withRouter(Education));

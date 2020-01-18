@@ -29,6 +29,12 @@ export default function profileReducer(state = initialState, action) {
         ...state,
         profile: null
       };
+    case SET_PROFILES:
+      return {
+        ...state,
+        loading: false,
+        profiles: action.payload
+      };
     default:
       return state;
   }
