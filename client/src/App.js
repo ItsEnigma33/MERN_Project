@@ -22,6 +22,9 @@ import AddExperience from "./components/add-experience/AddExperience";
 import AddEducation from "./components/add-education/AddEducation";
 import Profiles from "./components/profiles/Profiles";
 import Profile from "./components/profile/Profile";
+import Feed from "./components/Feed/Feed";
+import NotFound from "./components/notFound/NotFound";
+import Post from "./components/post/Post";
 
 if (localStorage.getItem("token")) {
   //Setting Auth Token For Axios
@@ -41,7 +44,7 @@ if (localStorage.getItem("token")) {
     //Logout User
     store.dispatch(logoutUserDispatcher());
     //Moving To Login Page
-    window.location.href = "/user/login";
+    window.location.href = "/login";
   }
 }
 
@@ -56,6 +59,7 @@ function App() {
           <Route path="/register" component={Register}></Route>
           <Route path="/profiles" component={Profiles}></Route>
           <Route path="/profile/:handle" component={Profile}></Route>
+          <Route path="/notFound" component={NotFound}></Route>
           <Switch>
             <PrivateRoute
               path="/dashboard"
@@ -85,6 +89,12 @@ function App() {
               path="/add-education"
               component={AddEducation}
             ></PrivateRoute>
+          </Switch>
+          <Switch>
+            <PrivateRoute path="/feed" component={Feed}></PrivateRoute>
+          </Switch>
+          <Switch>
+            <PrivateRoute path="/post/:id" component={Post}></PrivateRoute>
           </Switch>
           <Footer />
         </Router>

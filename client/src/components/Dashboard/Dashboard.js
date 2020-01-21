@@ -16,7 +16,9 @@ class Dashboard extends Component {
 
   deleteAccountHandler(ev) {
     ev.preventDefault();
-    this.props.deleteProfile();
+    if (window.confirm("Are you Sure You want to Delete Your Account")) {
+      this.props.deleteProfile();
+    }
   }
 
   componentDidMount() {
