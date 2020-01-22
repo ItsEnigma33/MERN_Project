@@ -78,9 +78,11 @@ class EditProfile extends Component {
         : profile.social.instagram;
 
       //getting Array of Skills
-      profile.skills = isEmptyCheck(profile.skills)
-        ? ""
-        : profile.skills.join(",");
+      if (!isEmptyCheck(profile.skills) && Array.isArray(profile.skills)) {
+        profile.skills = profile.skills.join(",");
+      } else {
+        profile.skills = profile.skills;
+      }
 
       //Setting in the State
       this.setState({

@@ -13,6 +13,7 @@ export const getCurrentProfile = () => dispatch => {
   axios
     .get("/profile/user")
     .then(res => {
+      console.log(res.data);
       dispatch({
         type: SET_PROFILE,
         payload: res.data

@@ -10,11 +10,6 @@ const loginValidator = require("../../validate/loginValidator");
 
 const router = express.Router();
 
-// @route GET /user/test
-// @access Public
-// @desc To test User
-router.get("/test", (req, res) => res.json({ user: "allowed" }));
-
 // @route GET /user/register
 // @access Public
 // @desc To Add New User
