@@ -3,11 +3,16 @@ import {
   GET_POST,
   DELETE_POST,
   ADD_POST,
-  GET_ERRORS
+  GET_ERRORS,
+  CLEAR_ERROR
 } from "./types";
 import axios from "axios";
 
 export const createPost = postData => dispatch => {
+  dispatch({
+    type: CLEAR_ERROR
+  });
+
   axios
     .post(`/post/add`, postData)
     .then(res => {
@@ -87,6 +92,10 @@ export const unlikePost = id => dispatch => {
 };
 
 export const createComment = (postId, commentData) => dispatch => {
+  dispatch({
+    type: CLEAR_ERROR
+  });
+
   axios
     .post(`/post/comment/add/${postId}`, commentData)
     .then(res => {

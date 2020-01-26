@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { deletePost, likePost, unlikePost } from "../../actions/postAction";
-import classname from "classname";
+import classnames from "classnames";
 
 class PostItem extends Component {
   deletePost(id, ev) {
@@ -21,6 +21,12 @@ class PostItem extends Component {
     this.props.unlikePost(id);
   }
 
+  checkForLike(likeArray) {
+    return (
+      likeArray.filter(like => like.user === this.props.auth.id).length > 0
+    );
+  }
+
   render() {
     const { post, auth, action } = this.props;
     let actionButtons;
@@ -32,7 +38,15 @@ class PostItem extends Component {
             className="btn btn-light mr-1"
             onClick={this.likePost.bind(this, post._id)}
           >
-            <i className="text-info fas fa-thumbs-up"></i>
+            <i
+              className="text-info fas fa-thumbs-up"
+              classnames={
+                ("fas fa-thumbs-up",
+                {
+                  "text-info": this.checkForLike.bind(this, post.likes)
+                })
+              }
+            ></i>
             <span className="badge badge-light">{post.likes.length}</span>
           </button>
           <button

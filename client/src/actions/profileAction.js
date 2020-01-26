@@ -5,7 +5,8 @@ import {
   CLEAR_CURRENT_PROFILE,
   GET_ERRORS,
   SET_USER,
-  SET_PROFILES
+  SET_PROFILES,
+  CLEAR_ERROR
 } from "./types";
 
 export const getCurrentProfile = () => dispatch => {
@@ -36,6 +37,7 @@ export const clearCurrentProfile = () => {
 
 // Add Profile
 export const createProfile = (profileData, history) => dispatch => {
+  dispatch(clearErrors());
   axios
     .post("/profile/user", profileData)
     .then(res => {
@@ -171,4 +173,10 @@ export const deleteProfile = () => dispatch => {
       });
     })
     .catch(err => {});
+};
+
+const clearErrors = () => {
+  return {
+    type: CLEAR_ERROR
+  };
 };
